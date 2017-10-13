@@ -84,19 +84,12 @@ def parse(mac):
     check(mac)
 
 if len(sys.argv) >= 2:
-    try:
-        for address in sys.argv[1:]:
-            if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
-                print("Correct usage: MACparser macNumber")
-                print("Example: MACparser 00:11:22:33:44:55")
-                exit()
-            parse(address)
-
-    except:
-        print("Correct usage: MACparser macNumber")
-        print("Example: MACparser 00:11:22:33:44:55")
-        exit()
-    exit()
+    for address in sys.argv[1:]:
+        if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
+            print("Correct usage: MACparser macNumber")
+            print("Example: MACparser 00:11:22:33:44:55")
+            exit()
+        parse(address)
 
 for line in sys.stdin:
     try:
