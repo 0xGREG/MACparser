@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cp MACparser /bin
+mkdir /etc/MACparser
+cp MACparser.py /etc/MACparser
+
+if [ ! -e /usr/share/wireshark/manuf ]; then
+    mkdir /usr/share/wireshark
+    cp manuf /usr/share/wireshark/manuf
+fi
