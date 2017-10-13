@@ -15,9 +15,12 @@ to /usr/share/wireshark (version from 13.10.2017) (otherwise will use the one ge
 - Interactive mode:
   `MACparser`
 - Single command mode:
-  `MACparser 00:11:22:33:44:55`
+  `MACparser 00:11:22:33:44:55 [00:00:00:00:00:00]`
 - Pipe mode (example):
   `cat test.txt | MACparser`
   
  ## Interactive mode
 You won't be greeted with any prompt, you just enter mac addresses and accept by return key
+
+## Single command mode
+You can enter multiple MAC addresses to check at the same time
