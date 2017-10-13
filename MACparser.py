@@ -52,7 +52,7 @@ def check(mac):
                     args[0] = args[0] + "/48"
                     windows = True
                 if re.match(r"^([\dA-F]{2}:){5}[\dA-F]{2}/\d{1,2}", args[0]): #checking if that mac is a subgroup
-                    if (globals.match == False and windows == False):
+                    if globals.match == False and windows == False:
                         continue # We don't want to check the extended options if we know that first bits already have no match
                     if verifyFullMac(args[0], mac) == True:
                         args[1] = args[1].split(" ")
@@ -83,16 +83,14 @@ def check(mac):
 def parse(mac):
     check(mac)
 
-if len(sys.argv) == 2:
+if len(sys.argv) >= 2:
     try:
-        address = sys.argv[1]
-        
-        if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
-            print("Correct usage: MACparser macNumber")
-            print("Example: MACparser 00:11:22:33:44:55")
-            exit()
-
-        parse(address)
+        for address in sys.argv[1:]:
+            if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
+                print("Correct usage: MACparser macNumber")
+                print("Example: MACparser 00:11:22:33:44:55")
+                exit()
+            parse(address)
 
     except:
         print("Correct usage: MACparser macNumber")
