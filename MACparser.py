@@ -90,9 +90,9 @@ if len(sys.argv) >= 2:
         if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
             print("Correct usage: MACparser macNumber")
             print("Example: MACparser 00:11:22:33:44:55")
-            exit()
-        parse(address)
-
+        check(address)
+    exit()
+    
 for line in sys.stdin:
     try:
         line = re.sub("-", ":", line)
