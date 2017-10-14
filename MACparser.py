@@ -1,5 +1,6 @@
 import re
 import sys
+import time
 
 class globals:
     """class providing global accessible variables"""
@@ -29,6 +30,7 @@ def verifyMac(pattern, mac):
     for char in pattern:
         if (char != mac[iteration]):
             valid = False
+            break
         iteration = iteration + 1
     if valid == True: # set global variables if pattern is matched
         globals.match = True
@@ -40,8 +42,11 @@ def check(mac):
     try:
         with open("/usr/share/wireshark/manuf", "r", encoding="utf8") as maclist:
             for line in maclist:
-                if not re.match(r"^([\dA-F]{2}[:-]){2}[\dA-F]{2}", line): # We don't need to process the line if it doesn't contain MAC patterns
-                    continue
+                try:
+                    if line[0] not in "0123456789ABCDEFabcdef": # if line starts with one of valid characters it contains MAC pattern
+                        continue
+                except: # empty sting
+                    continue 
                 args = line.split("\t")
                 windows = False
                 try: # if MAC is written in form 00-00... change it to 00:00..
@@ -50,17 +55,18 @@ def check(mac):
                         windows = True 
                 except:
                     pass
+                isPatternToBeChecked = False
                 if re.match(r"^([\dA-F]{2}:){5}[\dA-F]{2}/\d{1,2}", args[0]): #checking if that mac is a subgroup
                     if globals.match == False and windows == False:
                         continue # We don't want to check the extended options if we know that first bits already have no match
-                    if verifyFullMac(args[0], mac) == True:
-                        args[1] = args[1].split(" ")
-                        globals.matchedVendor = args[1][0]
-                        break
-                    else:
-                        continue
+                    isPatternToBeChecked = True
+                    args[0] = args[0].split("/")
+                    patternLength = calculateLengthFromMask(int(args[0][1]))
+                    args[0] = args[0][0][:patternLength]
+                    if args[0][-1]==":":
+                        args[0] = args[0][:-1]
             
-                if globals.match == True: # If previous option was matched and MAC didn't match any extended options/extended options for this MAC did't exist, mark previous match as answer
+                if globals.match == True and isPatternToBeChecked == False: # If previous option was matched and MAC didn't match any extended options/extended options for this MAC did't exist, mark previous match as answer
                     break
                 if verifyMac(args[0], mac) == True:
                     args[1] = args[1].split(" ")
@@ -79,9 +85,6 @@ def check(mac):
     globals.matchedVendor = ""
     globals.matchedString = ""
 
-def parse(mac):
-    check(mac)
-
 if len(sys.argv) >= 2:
     for address in sys.argv[1:]:
         if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
@@ -95,8 +98,7 @@ for line in sys.stdin:
         line = re.sub("-", ":", line)
         addresses = re.findall(r"(([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2})", line)
         for address in addresses:
-            parse(address[0])
+            check(address[0])
 
     except:
         continue
-    
