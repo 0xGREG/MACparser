@@ -44,13 +44,12 @@ def check(mac):
                     continue
                 args = line.split("\t")
                 windows = False
-                if re.match(r"^([\dA-F]{2}-){5}[\dA-F]{2}/\d{1,2}", args[0]):
-                    args[0] = re.sub("-",":",args[0])
-                    windows = True
-                if re.match(r"^([\dA-F]{2}-){5}[\dA-F]{2}", args[0]):
-                    args[0] = re.sub("-",":",args[0])
-                    args[0] = args[0] + "/48"
-                    windows = True
+                try: # if MAC is written in form 00-00... change it to 00:00..
+                    if args[0][2] == '-':
+                        args[0] = re.sub("-",":",args[0])
+                        windows = True 
+                except:
+                    pass
                 if re.match(r"^([\dA-F]{2}:){5}[\dA-F]{2}/\d{1,2}", args[0]): #checking if that mac is a subgroup
                     if globals.match == False and windows == False:
                         continue # We don't want to check the extended options if we know that first bits already have no match
@@ -61,7 +60,7 @@ def check(mac):
                     else:
                         continue
             
-                if globals.match == True:
+                if globals.match == True: # If previous option was matched and MAC didn't match any extended options/extended options for this MAC did't exist, mark previous match as answer
                     break
                 if verifyMac(args[0], mac) == True:
                     args[1] = args[1].split(" ")
