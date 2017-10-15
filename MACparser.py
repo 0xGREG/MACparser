@@ -7,6 +7,7 @@ class globals:
     match = False
     matchedString = ""
     matchedVendor = ""
+    partials = False
 
 def calculateLengthFromMask(mask):
     characters = mask / 4 # there is 4 bits in each character
@@ -85,12 +86,21 @@ def check(mac):
     globals.matchedVendor = ""
     globals.matchedString = ""
 
-if len(sys.argv) >= 2:
+try:
+    if sys.argv[1] == "-p":
+        globals.partials = True
+except:
+    pass
+
+if (globals.partials == False and len(sys.argv) == 2) or len(sys.argv) > 2:
     for address in sys.argv[1:]:
-        if not re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
+        if re.match(r"^([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2}$", address):
+            check(address)
+        elif address == "-p":
+            pass
+        else:
             print("Correct usage: MACparser macNumber")
             print("Example: MACparser 00:11:22:33:44:55")
-        check(address)
     exit()
     
 for line in sys.stdin:
